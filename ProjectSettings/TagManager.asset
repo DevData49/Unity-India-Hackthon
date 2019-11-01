@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - block
+  - selectedBlock
+  - wall
+  - console
+  - gameManager
+  - player
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - blockingLayer
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Background
+    uniqueID: 145055033
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: block
+    uniqueID: 1955892999
+    locked: 0
+  - name: console
+    uniqueID: 3542044355
+    locked: 0
+  - name: player
+    uniqueID: 3628622759
+    locked: 0
+  - name: cursor
+    uniqueID: 1923151519
+    locked: 0
