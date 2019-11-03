@@ -6,17 +6,21 @@ public class Player : MonoBehaviour
 {
     // Start is called before the first frame update
     public int nextlevel = -1;
+    public AudioSource grabAudio;
     public static int gridUnit = 2;
     public GameObject guide;
     public LayerMask blockingLayer;
     public float moveTime = 0.05f;
+    public int capacity = 3;
+    public List<Block> selectedBlocks;
     public bool moved = true;
     private Rigidbody2D rb2D;
     private BoxCollider2D boxCollider;
     private IEnumerator smoothmov;
     private float inverserMoveTime;
-    public int capacity = 3;
-    public List<Block> selectedBlocks;
+    private bool moving = false;
+    public bool paused= false;
+    
 
     private void Start() {
         if(MindEvents.current){
@@ -28,9 +32,10 @@ public class Player : MonoBehaviour
         inverserMoveTime =  1f / moveTime;
     }
     private void OnMouseOver() {
-        if(Input.GetMouseButtonDown(0)){
+        if(Input.GetMouseButtonDown(0) && !paused){
             guide.GetComponent<Guide>().setSelected(this);
             Vector2 cursorPos =  Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            
             guide.transform.position =  new Vector2(Mathf.Round(cursorPos.x/gridUnit)*gridUnit, Mathf.Round(cursorPos.y/gridUnit)/gridUnit);
         }    
     }
@@ -43,6 +48,7 @@ public class Player : MonoBehaviour
     }
 
     protected IEnumerator SmoothMovement(Vector3 end){
+        
         float sqrRemainingDistance = (transform.position -end).sqrMagnitude;
 
         while(sqrRemainingDistance > float.Epsilon){
@@ -53,15 +59,17 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void moveChild(Vector3 pos, int strength){
-        if(selectedBlocks.Count != 0){
-           foreach (Block block in selectedBlocks){
-               block.setPosition(block.gameObject.transform.position+pos,strength, true);
-           } 
-        }
-    }
+    // private void moveChild(Vector3 pos, int strength){
+    //     Debug.Log("Fired");
+    //     if(selectedBlocks.Count != 0){
+    //        foreach (Block block in selectedBlocks){
+    //            block.setPosition(block.gameObject.transform.position+pos,strength, true);
+    //        } 
+    //     }
+    // }
 
     public bool setPosition(Vector3 pos,int strength){
+        Debug.Log("Fired");
         if(strength == 0){
             return false;
         }
@@ -80,12 +88,10 @@ public class Player : MonoBehaviour
             boxCollider.enabled = false;
             RaycastHit2D hit = Physics2D.Linecast(start, end, blockingLayer);
             boxCollider.enabled = true;
-            //Debug.Log("here");
-            //Debug.Log(hit.transform);
             if(hit.transform == null) {
                 smoothmov = SmoothMovement(pos);
                 StartCoroutine(smoothmov);
-                moveChild(new Vector3(diff.x,diff.y,0), strength-1);
+                //moveChild(new Vector3(diff.x,diff.y,0), strength-1);
                 moved = true;
                 return true;
             } else {
@@ -93,7 +99,7 @@ public class Player : MonoBehaviour
                 if(hit.collider.gameObject.tag == "block" && hit.transform.GetComponent<Block>().setPosition(new Vector3(Mathf.Round(push.x), Mathf.Round(push.y)),strength-1)){
                     smoothmov = SmoothMovement(pos);
                     StartCoroutine(smoothmov);
-                     moveChild(diff, strength-1);
+                // moveChild(diff, strength-1);
                     moved = true;
                     return true;
                 } else {
@@ -127,15 +133,23 @@ public class Player : MonoBehaviour
         return (selectedBlocks.Count != capacity);
     }
     public void pushBlock(Block block){
+      
         if(selectedBlocks.Count < capacity){
+            grabAudio.Play();
             block.isSelected = true;
+            //block.gameObject.tag="selectedBlock";
             selectedBlocks.Add(block);
+            block.gameObject.transform.SetParent(transform);
         }
     }
     public void removeBlock(Block block){
+        
         for(int i=0;i<selectedBlocks.Count;i++){
             if(selectedBlocks[i].gameObject.GetInstanceID() == block.gameObject.GetInstanceID()){
                 selectedBlocks.RemoveAt(i);
+                grabAudio.Play();
+                //block.gameObject.tag = "block";
+                block.gameObject.transform.parent=null;
                 block.isSelected = false;
                 return;
             }
@@ -148,6 +162,9 @@ public class Player : MonoBehaviour
             MindEvents.current.Answered -= levelUp;
         }
      
+    }
+    public void pause(){
+        paused = true; 
     }
     public void levelUp(){
         Debug.Log("Game Complete");

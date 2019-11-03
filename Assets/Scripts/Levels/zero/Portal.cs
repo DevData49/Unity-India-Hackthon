@@ -12,12 +12,16 @@ public class Portal : MonoBehaviour
    /// <param name="other">The other Collider2D involved in this collision.</param>
    void OnTriggerEnter2D(Collider2D other)
    {
-       if(other.gameObject.tag == "Player")
+       if(other.gameObject.tag == "Player"){
+           other.gameObject.GetComponent<Player>().pause();
+           other.gameObject.GetComponent<Player>().setPosition(transform.position,3);
            StartCoroutine(nextLevel());
+       }
+           
    }
 
    IEnumerator nextLevel(){
-       yield return new WaitForSeconds(3);
+       yield return new WaitForSeconds(1);
        GetComponent<Load>().LoadLevel();
    }
 }

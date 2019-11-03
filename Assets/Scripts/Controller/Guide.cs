@@ -13,7 +13,7 @@ public class Guide : MonoBehaviour
     private Player player;
     [SerializeField]
     //private float lastOverlapOutTime = 0;
-    
+    //public Camera rcCam;
 
     // Update is called once per frame
     private void Start() {
@@ -26,7 +26,9 @@ public class Guide : MonoBehaviour
     void Update()
     {
         if(selected == true ){
+            Debug.Log("1");
            Vector2 pos =  Camera.main.ScreenToWorldPoint(Input.mousePosition);
+           //Vector2 pos =  rcCam.ScreenToViewportPoint(Input.mousePosition);
             transform.position =  new Vector2(pos.x,pos.y);
             player.setPosition(new Vector3(Mathf.Round(transform.position.x/Player.gridUnit)*Player.gridUnit, Mathf.Round(transform.position.y/Player.gridUnit)*Player.gridUnit,0),3); 
             // if(!overlapping){
